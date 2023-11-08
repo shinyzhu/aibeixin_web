@@ -30,4 +30,4 @@ jobs:
             rm -rf /var/www/aibeixin/web/www/
             
       - name: Deploy with rsync
-        run: rsync -avz –delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/aibeixin/web/www/
+        run: rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/aibeixin/web/www/
