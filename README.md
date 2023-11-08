@@ -14,7 +14,9 @@ TODO:
 
 ## CD
 
-TODO:
+I've set up GitHub Actions to automatically deploy the `www` to the host.
+
+Credits to: <https://zellwk.com/blog/github-actions-deploy/>
 
 ### Deploy with Docker
 
