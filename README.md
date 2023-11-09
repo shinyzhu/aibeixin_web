@@ -8,11 +8,7 @@ This web is built based on the [Vanilla Template](https://templatemo.com/tm-526-
 
 The code is located under the `www` folder.
 
-## CI
-
-TODO:
-
-## CD
+## CI&CD
 
 I've set up GitHub Actions to automatically deploy the `www` to the host.
 
