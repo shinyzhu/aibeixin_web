@@ -131,7 +131,7 @@ Step 4: Reload and restart Nginx
 
 ```sh
 nginx -t
-ystemctl restart nginx
+systemctl restart nginx
 ```
 
 ## Enjoy
