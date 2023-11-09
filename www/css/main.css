@@ -25,6 +25,8 @@ a:hover { color: #FF0; }
 @font-face {
   font-family: "DouyinSans";
   src: url("../fonts/DouyinSansBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 /*----------
