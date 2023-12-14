@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - www
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -18,16 +20,6 @@ jobs:
 
       - name: Add Known Hosts
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Cleanup
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            rm -rf /var/www/aibeixin/web/www/
             
       - name: Deploy with rsync
-        run: rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/aibeixin/web/www/
+        run: rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/aibeixin/web/www/
