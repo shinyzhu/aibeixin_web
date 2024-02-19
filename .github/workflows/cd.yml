@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - www
+      - www/*
 jobs:
   shipping:
     name: ship to production
