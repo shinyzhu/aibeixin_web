@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Schulte Table</title>
+    <style type="text/css">
+    	h1{border-bottom: 1px solid #cccccc;}
+    	div#options{margin:0 0 1em 0;background: #efefef; padding: .3em;text-align: center;}
+    	#timer{margin:0 0 1em 0;font-size: 1.5em; text-align: center; color:#000000; font-weight:bold;}
+    	.finished{color: #00b233;}
+    	table{margin:auto;}
+    	td{border: 2px solid #ccc;background: #efefef; padding: .5em;font-size:1.5em;font-weight: bold; text-align: center;color:#000000;}
+    	td.clicked{border: 2px solid #00b233;color: #00b233}
+    	td.error_clicked{border: 2px solid #ff1919;color: #ff1919}
+    </style>
+</head>
+
+<body>
+
+<script type="text/javascript">
+	window.BOARD_DEBUG = false;
+
+	function logInfo(msg){
+		if(window.BOARD_DEBUG){
+			console.info(msg);
+		}
+	}
+
+	//Util
+	function $(elemId){
+		return document.getElementById(elemId);
+	}
+
+	//class ref: http://www.ruanyifeng.com/blog/2012/07/three_ways_to_define_a_javascript_class.html
+	//**************** Stopwatch ****************//
+	var BoardStopwatch = {
+		createNew : function(elemId){
+			var w = {};
+
+
+			var tick = 0;
+			var timer = null;
+			
+			function toDoubleText(number){
+				return number < 10 ? "0" + number : "" + number;
+			};
+
+			function toDisplayString(){
+				var hh = parseInt(tick / 60 / 60);
+				var mm = parseInt(tick / 60 % 60);
+				var ss = parseInt(tick % 60);
+
+				var hhText = (1 < hh) ? toDoubleText(hh) + ":" : "";
+
+				return hhText + toDoubleText(mm) + ":" + toDoubleText(ss);
+			};
+
+			function show(){
+				if(elemId){
+					$(elemId).innerText = toDisplayString();
+				}else{
+					logInfo(toDisplayString());
+				}
+			};
+
+
+			w.start = function(){
+				clearInterval(timer);
+				show();//reset to 0
+
+				timer = setInterval(function(){
+					tick++;
+					show();
+				}, 1000);
+			};
+			w.stop = function (){
+				clearInterval(timer);
+			};
+			w.reset = function(){
+				tick = 0;
+				show();
+			};
+
+			return w;
+		}
+	};
+	//**************** Stopwatch ****************//
+
+
+	//**************** Number board ****************//
+	var NumberBoard = {
+		createNew : function(elemId, stopwatch){
+			var b = {};
+
+			b.clicked_numbers = [];
+
+
+			//生成一个不超过 max 的自然数
+			function random_number(max){
+				var s = Math.ceil(Math.random() * 1000.0 % max);
+
+				return s;
+			};
+
+			//生成从 1 到 max 的随机自然数列表
+			function random_numbers(max){
+				var numbers = [];
+				do{
+					var x = random_number(max);
+
+					if(-1 == numbers.indexOf(x)){
+						numbers.push(x);
+					}
+				}while(numbers.length < max);
+
+				logInfo(numbers);
+
+				return numbers;
+			};
+
+			//找到数组的中间数，奇数个返回最中间一个，偶数个返回最中间两个的第一个
+			function median_number(numbers){
+				var l = numbers.length;
+				if(0 == l % 2){
+					return numbers[l / 2 - 1];
+				}else{
+					return numbers[Math.floor(l / 2)];
+				}
+			};
+
+			//获取一个自然数的两个最接近的因数
+			function root_factor(number){
+				//1.找到所有因数，2.找到中间的因数（平方数的因数个数是奇数，中间一个就是平方根／其他数的因数是偶数个，中间两个的乘积）
+				var factors = [];
+				for(var f = 1; f <= number; f++){
+					if(0 == number % f){
+						//整除了的就是因数
+						factors.push(f);
+					}
+				}
+
+				var mf = median_number(factors);
+
+				logInfo(factors + " | " + mf);
+
+				return mf;				
+			};
+
+			function board_html(numbers, max){
+				var column_count = root_factor(max);
+				var row_count = max / column_count;
+
+				var html = '';
+				for (var r = 0; r < row_count; r++) {
+					html += '<tr>';
+					for(var c = 0; c < column_count; c++){
+						html += "<td onclick='javascript:cell_click(this)'>" + numbers[r * column_count + c] + '</td>';
+					}
+					html += '</tr>';
+				}
+
+				return html;
+			};
+
+
+			//show a number board
+			b.show = function(max){
+				//clear clicked numbers
+				b.clicked_numbers = [];
+
+				stopwatch.reset();
+				stopwatch.start();
+
+				var numbers = random_numbers(max);
+				$(elemId).innerHTML = board_html(numbers, max);
+			};
+
+			return b;
+		}
+	};
+	//**************** Number board ****************//
+
+
+	//**************** Page events ****************//
+	function cell_click(sender){
+		logInfo(sender);
+
+		var max = $('grid_count_select').value;
+		var n = parseInt(sender.innerText);
+
+		if(window.numberBoard.clicked_numbers.length == n - 1){
+			window.numberBoard.clicked_numbers.push(n);
+
+			sender.className = "clicked";
+		}else if(sender.className != "clicked"){
+			sender.className = "error_clicked";
+		}
+
+		//stop the watch when full.
+		if(window.numberBoard.clicked_numbers.length == max){
+			window.boardWatch.stop();
+
+			$("timer").className = "finished";
+		}
+
+		logInfo(window.numberBoard.clicked_numbers);
+	}
+	//**************** Page events ****************//
+
+	//document ready
+	window.onload = function(){
+
+		//bind events
+		$('grid_count_select').onchange = function(e){
+			$("timer").className = "";
+			window.numberBoard.show(this.value);
+		};
+
+		$('redo_button').onclick = function(e){
+			$("timer").className = "";
+			window.numberBoard.show($('grid_count_select').value);
+		};
+
+		//init a stopwatch
+		window.boardWatch = BoardStopwatch.createNew("timer");
+
+		//初始化一个默认的数字面板
+		var gridMax = $('grid_count_select').value;
+		window.numberBoard = NumberBoard.createNew("numbers_table", window.boardWatch);
+		window.numberBoard.show(gridMax);
+
+		//TODO: 加入按照顺序点击效果（声音提示【小程序里再考虑】，颜色显示【已完成】）
+		//TODO: （小程序中实现）专注界面，设置好后进入面板，按顺序完成后刷新
+
+	};
+</script>
+	<h1>Count in order</h1>
+	<div id="options">
+		<label for="grid_count_select">How many numbers: </label>
+		<select id="grid_count_select">
+			<option value="9">9</option>
+			<option value="16">16</option>
+			<option value="25" selected="selected">25</option>
+			<option value="36">36</option>
+			<option value="49">49</option>
+			<option value="64">64</option>
+		</select>
+		<button id="redo_button">Again !</button>
+	</div>
+	<div id="board">
+		<div id="timer">--:--</div>
+		<table id="numbers_table"></table>
+	</div>
+</body>
+</html>
