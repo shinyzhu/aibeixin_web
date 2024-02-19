@@ -6,14 +6,15 @@ on:
     paths:
       - www
 jobs:
-  deployment:
+  shipping:
+    name: ship to production
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
 
       - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@v2.7.0
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: never_know
