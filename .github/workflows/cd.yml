@@ -1,6 +1,5 @@
 name: Ship It!
 on:
-  workflow_dispatch: {}
   push:
     branches:
       - main
@@ -24,4 +23,4 @@ jobs:
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
             
       - name: Deploy with rsync
-        run: rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:{{ secrets.PUB_PATH }}
+        run: rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PUB_PATH }}
