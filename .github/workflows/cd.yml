@@ -1,4 +1,4 @@
-name: Deployment
+name: Ship It!
 on:
   push:
     branches:
