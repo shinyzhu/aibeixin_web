@@ -1,5 +1,7 @@
 # Website for aibeixin.cn
 
+[![Ship It!](https://github.com/shinyzhu/aibeixin_web/actions/workflows/cd.yml/badge.svg)](https://github.com/shinyzhu/aibeixin_web/actions/workflows/cd.yml)
+
 This is the code and CI/CD for website [aibeixin.cn](https://aibeixin.cn) which is my wife's bakery shop in Songjiang, Shanghai, China.
 
 ## Code
