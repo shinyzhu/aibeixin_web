@@ -1,4 +1,4 @@
-name: Ship It!
+name: Deployment
 on:
   push:
     branches:
@@ -6,10 +6,9 @@ on:
     paths:
       - www/*
 jobs:
-  shipping:
-    name: ship to production
+  Deploying:
+    name: Deploy to web host
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -22,5 +21,5 @@ jobs:
       - name: Add Known Hosts
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
             
-      - name: Deploy with rsync
-        run: rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PUB_PATH }}
+      - name: Publish with rsync
+        run: rsync -avz --exclude='.git/' --exclude='.github/' --rsync-path="sudo rsync" --delete -e "ssh -p ${{ secrets.SSH_PORT }}" ./www/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.PUB_PATH }}
